@@ -337,7 +337,7 @@
 
     <footer class="bg-white border-t border-gray-200 mt-8 py-6">
         <div class="container mx-auto px-4 text-center text-gray-500 text-sm">
-            <p>亚马逊铺货工具 &copy; 2025 - 物流与定价计算专业工具</p>
+            <p>亚马逊垂直精铺工具 &copy; 2025 - 物流与定价计算专业工具5.0</p>
         </div>
     </footer>
 
@@ -1404,12 +1404,12 @@
             Object.keys(minFeesByProduct).sort((a, b) => a - b).forEach(productIndex => {
                 const feeInfo = minFeesByProduct[productIndex];
                 
-                // 计算公式：售价 = (采购成本 + 头程运费 + 其他费用) / (1 - 利润率 - 亚马逊佣金比例)
+                // 新计算公式：售价 = (采购成本 + 头程运费 + 其他费用) / [(1 - 亚马逊佣金比例) × (1 - 利润率)]
                 const totalCost = feeInfo.purchaseCost + feeInfo.shippingFee + feeInfo.otherCosts;
-                const denominator = 1 - profitMarginDecimal - amazonFeeDecimal;
+                const denominator = (1 - amazonFeeDecimal) * (1 - profitMarginDecimal);
                 
                 if (denominator <= 0) {
-                    alert('利润率和亚马逊佣金比例之和不能超过100%');
+                    alert('亚马逊佣金比例和利润率设置过高，导致计算结果无效');
                     return;
                 }
                 
@@ -1506,11 +1506,11 @@
                             
                             <div class="mt-4 p-3 bg-blue-50 border border-blue-100 rounded-md text-sm text-blue-800">
                                 <div class="font-medium mb-1">定价公式:</div>
-                                <div>售价 = (采购成本 + 头程运费 + 其他费用) / (1 - 利润率 - 亚马逊佣金比例)</div>
+                                <div>售价 = (采购成本 + 头程运费 + 其他费用) / [(1 - 亚马逊佣金比例) × (1 - 利润率)]</div>
                                 <div class="mt-1">
                                     ${result.currencySymbol}${result.priceInLocal.toFixed(2)} = 
                                     (¥${result.purchaseCost.toFixed(2)} + ¥${result.shippingFee.toFixed(2)} + ¥${result.otherCosts.toFixed(2)}) 
-                                    / (1 - ${result.profitMargin}% - ${result.amazonFee}%)
+                                    / [(1 - ${result.amazonFee}%) × (1 - ${result.profitMargin}%)]
                                     <br>转换为${result.currency}后得出
                                 </div>
                             </div>
